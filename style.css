@@ -1,0 +1,570 @@
+/* ? ==========================================================================
+   ?  Page Layout & Shells
+   ? ========================================================================== */
+
+body {
+    margin: 0;
+    width: 100vw;
+    height: 100dvh;
+    min-height: 100dvh;
+    overflow: hidden; /* Prevents scrollbars when scaling */
+
+    background: #e3f5ff;
+}
+
+.appShell,
+.gameShell {
+    position: fixed;
+    left: 50%;
+    top: 0%;
+    width: 634px;
+    height: 1050px;
+    transform-origin: center top;
+}
+
+.gameShell {
+    transform: translateX(-50%);
+    box-sizing: border-box;
+}
+
+/* ? ==========================================================================
+   ?  Base Objects
+   ? ========================================================================== */
+
+.box {
+    position: absolute;
+    user-select: none;
+}
+
+.space {
+    position: absolute;
+    z-index: 1;
+
+    border: 2px dashed rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.canvasConfetti {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ? ==========================================================================
+   ?  Operations
+   ? ========================================================================== */
+
+.operation {
+    z-index: 4;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-sizing: border-box;
+
+    width: 72px;
+    height: 72px;
+
+    font-size: 70px;
+    font-weight: bold;
+
+    border: 2px solid #000;
+    border-radius: 10px;
+
+    /* Toy-like depth */
+    box-shadow:
+        0 3px 0 #000,
+        inset 0 1px 0 rgba(255,255,255,.15);
+
+    transition:
+        transform .08s ease,
+        box-shadow .08s ease,
+        filter .15s ease;
+}
+
+.operation:hover {
+    filter: brightness(1.04);
+}
+
+.operation:active,
+.operation.active {
+    transform: translateY(3px);
+    box-shadow:
+        0 0 0 #000,
+        inset 0 2px 4px rgba(0,0,0,.18);
+}
+
+/* Consolidated Base Button */
+.button {
+    width: 44px;
+    height: 44px;
+
+    display: grid;
+    place-items: center;
+
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    border-radius: 12px;
+
+    background: #fff;
+
+    cursor: pointer;
+
+    transition:
+        transform .15s,
+        background .15s,
+        box-shadow .15s,
+        border-color .15s;
+
+    box-shadow: 0 3px 10px rgba(0,0,0,.08);
+}
+
+.button:hover {
+    transform: translateY(-2px);
+    background: #f3f3f3;
+    border-color: #000;
+    box-shadow: 0 6px 18px rgba(0,0,0,.15);
+}
+
+.button:active {
+    transform: scale(.95);
+}
+
+.button.selected{
+    background: #c2c2c2;
+}
+
+/* Shared Toolbar Icon Style */
+.toolbar-icon {
+    display: block;
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    background: transparent;
+}
+
+/* ? ==========================================================================
+   ?  Number Tiles
+   ? ========================================================================== */
+
+.number {
+    position: absolute;
+    z-index: 5;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-sizing: border-box;
+    width: 100px;
+    padding: 0;
+    height: 100px;
+
+    touch-action: none;
+    user-select: none;
+
+    color: #fff;
+    font-family: 'Bahnschrift', monospace;
+    font-size: 50px;
+
+    border: 4px solid #000;
+    border-radius: 10px;
+
+    backface-visibility: hidden;
+    transition: box-shadow 0.2s ease;
+
+    letter-spacing: -3px;
+}
+
+.number-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 1px;
+    width: 100%;
+    height: 100%;
+    color: #fff;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+/* Small number shown inside calculations */
+.number.small {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+    padding: 2px 0px 0px 0px;
+    border: 1px solid #0000006f;
+    background-color: #001d54;
+    touch-action: none;
+    letter-spacing: 0px;
+    border-radius: 5px;
+}
+
+/* Operator inside calculations */
+.operatorCalculation {
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* Calculation badge */
+.calculation {
+    position: relative;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+
+    padding: 1px 2px 1px 2px;
+
+    border: 0.5px solid #000;
+    border-radius: 6px;
+}
+
+/* ? ==========================================================================
+   ?  Objective Area
+   ? ========================================================================== */
+
+.objective {
+    position: absolute;
+    z-index: 1;
+
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 240px;
+    height: 200px;
+
+    color: #000000;
+    font-family: 'Bahnschrift SemiBold', monospace;
+    font-size: 120px;
+    font-weight: 900;
+}
+
+/* ? ==========================================================================
+   ?  Animations
+   ? ========================================================================== */
+
+.wiggle {
+    animation:
+        floatY 1.1s ease-in-out infinite alternate,
+        floatX 2.123s ease-in-out infinite alternate,
+        tilt 1.3s ease-in-out infinite alternate;
+    animation-composition: add;
+}
+
+@keyframes floatY {
+    from { transform: translateY(-3px); }
+    to   { transform: translateY(3px); }
+}
+
+@keyframes floatX {
+    from { transform: translateX(-2px); }
+    to   { transform: translateX(2px); }
+}
+
+@keyframes tilt {
+    from { transform: rotate(-5deg); }
+    to   { transform: rotate(5deg); }
+}
+
+/* ? ==========================================================================
+   ?  Board
+   ? ========================================================================== */
+
+#tab {
+    position: fixed;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+
+    height: 10px;
+
+    left: 50%;
+    transform: translateX(-50%);
+    top: -2px;
+    transition: .35s;
+    background: #ffffff;
+    color: rgb(0, 0, 0);
+    border: 2px solid rgba(0, 0, 0, 1);
+    padding: 18px 10px;
+    cursor: pointer;
+    z-index: 1001;
+    border-radius: 0 0 10px 10px;
+}
+
+#boardPanel {
+    position: fixed;
+    inset: 0;
+
+    transform: translateY(-100%);
+    transition: .35s;
+
+    /* Less transparent */
+    background: rgba(255,255,255,.82);
+
+    z-index: 998;
+}
+
+#boardPanel.open {
+    transform: translateY(0);
+}
+
+#canvasWB {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    touch-action: none;
+    cursor: crosshair;
+}
+
+/* Floating Whiteboard Toolbar */
+#toolBar {
+    position: fixed;
+
+    left: 50%;
+    transform: translateX(-50%);
+    top: 15px;
+
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    padding: 8px 12px;
+
+    border-radius: 18px;
+
+    background: rgba(255,255,255,.82);
+    backdrop-filter: blur(18px);
+
+    border: 1px solid rgba(255,255,255,.5);
+
+    box-shadow: 0 10px 30px rgba(0,0,0,.18);
+
+    z-index: 999;
+}
+
+/* BRUSH SLOT */
+
+.brush-slot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Close Button Specifics */
+#closeBttn {
+    font-size: 18px;
+    color: #666;
+}
+
+#closeBttn:hover {
+    color: #111;
+}
+
+#clearIcon {
+    width: 22px;
+    height: 22px;
+    opacity: .75;
+    transition: .2s;
+}
+
+.button:hover #clearIcon {
+    opacity: 1;
+    transform: rotate(-8deg);
+}
+
+.toolIcon {
+    width: 20px;
+    height: 20px;
+
+    pointer-events: none;
+    position: absolute;
+
+    opacity: .75;
+    transition:
+        opacity .2s,
+        transform .2s;
+}
+
+.button:hover .toolIcon {
+    opacity: 1;
+}
+
+.toolIcon.brush {
+    animation: paint 500ms ease-in-out;
+}
+
+.toolIcon.eraser {
+    animation: erase 750ms ease-in-out;
+    animation-composition: add;
+}
+
+@keyframes paint {
+    0%   { transform: rotate(0deg); }
+    10%  { transform: rotate(5deg); }
+    50%  { transform: rotate(-65deg); }
+    90%  { transform: rotate(2deg); }
+    100% { transform: rotate(0deg); }
+}
+
+@keyframes erase {
+    0%   { transform: translateX(0px); }
+    20%  { transform: translateX(-2px); }
+    40%  { transform: translateX(2px); }
+    60%  { transform: translateX(-2px); }
+    80%  { transform: translateX(2px); }
+    100% { transform: translateX(0px); }
+}
+
+#toolCursor {
+    position: absolute;
+
+    border: 2px solid;
+    border-radius: 50%;
+
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    display: none;
+
+    z-index: 999;
+    transition: border-color .15s, background-color .15s;
+}
+
+#toolCursor.eraser {
+    border-color: #444 !important;
+    background: transparent !important;
+}
+
+.toolSection {
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    padding-left: 10px;
+}
+
+.toolSection.hidden {
+    display: none;
+}
+
+.colorPckrWrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#colorPckr {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  
+  display: grid;
+  place-items: center;
+
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  border-radius: 12px;
+  background: #ffffff; /* Native color picker default background */
+
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+
+  transition:
+    transform 0.15s,
+    background 0.15s,
+    box-shadow 0.15s,
+    border-color 0.15s;
+}
+
+/* Hover, Active, and Selected states */
+#colorPckr:hover {
+  transform: translateY(-2px);
+  border-color: #000000;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+#colorPckr:active {
+  transform: scale(0.95);
+}
+
+#colorPckr.selected {
+  /* Using border and shadow to show selection so it doesn't cover the chosen color */
+  border-color: #000000;
+  box-shadow: 0 0 0 2px #000000;
+}
+
+/* Native color swatch alignment across WebKit and Firefox */
+#colorPckr::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+#colorPckr::-webkit-color-swatch {
+  border: none;
+  border-radius: 11px;
+}
+
+#colorPckr::-moz-color-swatch {
+  border: none;
+  border-radius: 11px;
+}
+
+/* Vertical Separator Line */
+.divider {
+    width: 2px;
+    height: 50px;
+    background-color: #b6b6b6;
+    margin: 0 4px;
+}
+
+/* OVERLAY */
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.65);
+    z-index: 9999;
+}
+
+.modal {
+    width: 420px;
+    max-width: 90%;
+    max-height: 80vh;
+
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 32px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    text-align: left;
+}
